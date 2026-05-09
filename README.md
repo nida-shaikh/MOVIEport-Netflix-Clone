@@ -50,3 +50,34 @@ Start the server:
 bash
 
 npm run dev
+📸 Screenshots
+(Optional: You can add your app screenshots here later to make it look even more professional!)
+
+Made with ❤️ by Nida Shaikh
+
+text
+
+
+---
+
+### 🚀 Final Push Karo
+
+Save karke terminal mein ye dalo:
+
+```bash
+git add .
+bash
+
+git commit -m "Updated final live link in README"
+bash
+
+git push
+💼 CV Ke Liye Final Format (Updated Link)
+MOVIEport | React, Tailwind CSS, TMDB API
+
+Built a high-performance Netflix-style streaming UI featuring an auto-sliding carousel, Glassmorphism UI cards, and a responsive MovieBox-style sidebar layout.
+Integrated TMDB REST API with Debounced Search and Pagination for optimized and unlimited data fetching.
+Implemented a persistent Watchlist using Context API & LocalStorage, and embedded YouTube Trailers dynamically within the app.
+Optimized performance using Lazy Loading (Code Splitting) and Custom Toast Notifications for enhanced UX.
+Live Link: https://movi-eport-netflix-clone-5mcb.vercel.app/
+GitHub: https://github.com/nida-shaikh/MOVIEport-Netflix-Clone
