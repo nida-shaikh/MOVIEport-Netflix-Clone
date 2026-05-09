@@ -1,10 +1,10 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "https://www.omdbapi.com/", // ✅ YAHAN 's' ADD KARO
+  baseURL: "https://api.themoviedb.org/3",
   params: {
-    apikey: "cb2b99f5", 
-    type: "series",
+    api_key: "a5953e845be4cd1af483a46567fcfbb7", // ✅ Tumhari TMDB Key
+    language: "en-US",
   },
 });
 

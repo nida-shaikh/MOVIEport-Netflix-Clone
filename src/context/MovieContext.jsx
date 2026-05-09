@@ -2,36 +2,47 @@ import { createContext, useState, useEffect, useContext } from 'react';
 
 const MovieContext = createContext();
 
-// Custom hook - context ko use karne ke liye
 export const useMovieContext = () => useContext(MovieContext);
 
 export const MovieProvider = ({ children }) => {
-  // LocalStorage se purana data lo, naya hai toh empty array rakho
-  const [watchlist, setWatchlist] = useState(() => {
-    const saved = localStorage.getItem('movieport-watchlist');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [watchlist, setWatchlist] = useState([]);
 
-  // Jab bhi watchlist change ho, LocalStorage update karo
+  // ✅ SMART LOGIC: Page load hote hi purane OMDb data check karo aur hatao
+  useEffect(() => {
+    const saved = localStorage.getItem('movieport-watchlist');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Agar data mein imdbID hai, matlab ye purana OMDb data hai, delete karo!
+        if (parsed.length > 0 && parsed[0].imdbID) {
+          localStorage.removeItem('movieport-watchlist');
+          setWatchlist([]);
+        } else {
+          setWatchlist(parsed); // Naya TMDB data hai toh rakh lo
+        }
+      } catch (e) {
+        localStorage.removeItem('movieport-watchlist'); // Corrupt data bhi hata do
+      }
+    }
+  }, []);
+
+  // Naye data ko save karo
   useEffect(() => {
     localStorage.setItem('movieport-watchlist', JSON.stringify(watchlist));
   }, [watchlist]);
 
-  // Watchlist mein movie add karo
   const addToWatchlist = (movie) => {
-    if (!watchlist.find((m) => m.imdbID === movie.imdbID)) {
+    if (!watchlist.find((m) => m.id === movie.id)) {
       setWatchlist([...watchlist, movie]);
     }
   };
 
-  // Watchlist se movie hatao
   const removeFromWatchlist = (id) => {
-    setWatchlist(watchlist.filter((m) => m.imdbID !== id));
+    setWatchlist(watchlist.filter((m) => m.id !== id));
   };
 
-  // Check karo movie watchlist mein hai ya nahi
   const isInWatchlist = (id) => {
-    return watchlist.some((m) => m.imdbID === id);
+    return watchlist.some((m) => m.id === id);
   };
 
   return (

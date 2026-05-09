@@ -6,11 +6,13 @@ function TvShows() {
       <h1 className="text-3xl md:text-4xl font-bold text-white mb-8">📺 TV Shows</h1>
       
       <div className="space-y-10">
-        <MovieRow title="🏆 Classic TV Shows" fetchUrl="Friends" />
-        <MovieRow title="😂 Comedy TV" fetchUrl="The Office" />
-        <MovieRow title="🔪 Crime & Thriller TV" fetchUrl="Breaking Bad" />
-        <MovieRow title="🧛 Supernatural TV" fetchUrl="Stranger Things" />
-        <MovieRow title="🎭 Drama Series" fetchUrl="Succession" />
+        {/* ✅ TMDB TV Show Endpoints */}
+        <MovieRow title="🏆 Top Rated TV Shows" fetchUrl="/tv/top_rated" />
+        <MovieRow title="📺 Airing Today" fetchUrl="/tv/airing_today" />
+        <MovieRow title="😂 Comedy TV" fetchUrl="/discover/tv?with_genres=35" />
+        <MovieRow title="🔪 Crime & Thriller TV" fetchUrl="/discover/tv?with_genres=80" />
+        <MovieRow title="🧛 Sci-Fi & Fantasy" fetchUrl="/discover/tv?with_genres=10765" />
+        <MovieRow title="🎭 Drama Series" fetchUrl="/discover/tv?with_genres=18" />
       </div>
     </div>
   );

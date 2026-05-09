@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react';
 import axios from '../utils/axios';
 import HeroSection from '../components/HeroSection';
 import MovieRow from '../components/MovieRow';
-import MovieCard from '../components/MovieCard'; // Ye path fix kar diya hai
-import SkeletonCard from '../components/SkeletonCard'; // Skeleton bhi import kiya
+import MovieCard from '../components/MovieCard';
+import SkeletonCard from '../components/SkeletonCard';
 import { FiLoader } from 'react-icons/fi';
 
 function Home({ searchQuery }) {
   const [searchResults, setSearchResults] = useState([]);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const [loading, setLoading] = useState(false); // Naya search hone pe skeleton dikhane ke liye
-  const [loadingMore, setLoadingMore] = useState(false); // Load more button ke liye
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     if (searchQuery) {
@@ -28,34 +28,26 @@ function Home({ searchQuery }) {
       if (isNewSearch) setLoading(true); 
       else setLoadingMore(true);
       
-      const response = await axios.get('', {
-        params: { s: searchQuery, page: pageNum }
+      // ✅ TMDB Search Endpoint
+      const response = await axios.get('/search/multi', {
+        params: { query: searchQuery, page: pageNum }
       });
       
-      let fetchedMovies = response.data.Search || [];
-      setTotalResults(parseInt(response.data.totalResults || 0));
+      let fetchedMovies = response.data.results || [];
+      setTotalResults(parseInt(response.data.total_results || 0));
 
-      // Filter: Posterless aur Duplicate hata do
-      const uniqueMovies = [];
-      const seenIds = new Set();
-      
-      fetchedMovies.forEach((movie) => {
-        if (movie.Poster !== "N/A" && !seenIds.has(movie.imdbID)) {
-          uniqueMovies.push(movie);
-          seenIds.add(movie.imdbID);
-        }
-      });
+      // ✅ Filter: TMDB sometimes returns 'person', we only want movies/tv
+      const filteredMovies = fetchedMovies.filter(movie => movie.media_type !== "person");
 
       if (isNewSearch) {
-        setSearchResults(uniqueMovies);
+        setSearchResults(filteredMovies);
       } else {
-        setSearchResults((prev) => [...prev, ...uniqueMovies]);
+        setSearchResults((prev) => [...prev, ...filteredMovies]);
       }
 
     } catch (error) {
       console.error("Search Error:", error);
     } finally {
-      // Finally block mein dono loading states false kar denge
       setLoading(false);
       setLoadingMore(false);
     }
@@ -72,9 +64,8 @@ function Home({ searchQuery }) {
   return (
     <div className="min-h-screen pb-10">
       
-      {/* Agar User ne search kiya hai */}
       {searchQuery ? (
-        <div className="pt-8 px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="pt-20 md:pt-8 px-4 md:px-12 max-w-7xl mx-auto">
           <h2 className="text-2xl font-bold mb-6 text-white">
             Search results for: <span className="text-red-500">"{searchQuery}"</span>
             {totalResults > 0 && (
@@ -82,7 +73,6 @@ function Home({ searchQuery }) {
             )}
           </h2>
           
-          {/* Agar pehli baar load ho raha hai toh Skeleton dikhao */}
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {Array.from({ length: 10 }).map((_, index) => (
@@ -93,11 +83,10 @@ function Home({ searchQuery }) {
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                 {searchResults.map((movie) => (
-                  <MovieCard key={movie.imdbID} movie={movie} />
+                  <MovieCard key={movie.id} movie={movie} />
                 ))}
               </div>
 
-              {/* LOAD MORE BUTTON */}
               {hasMore && (
                 <div className="flex justify-center mt-10">
                   <button 
@@ -124,16 +113,16 @@ function Home({ searchQuery }) {
           )}
         </div>
       ) : (
-        /* Normal Home Page */
         <>
           <HeroSection />
           <div className="-mt-12 relative z-10 space-y-10 pb-10">
-            <MovieRow title="🔥 Trending K-Dramas" fetchUrl="Squid Game" />
-            <MovieRow title="💼 Mafia & Action" fetchUrl="Vincenzo" />
-            <MovieRow title="💖 Romantic K-Dramas" fetchUrl="Crash Landing" />
-            <MovieRow title="🧟 Thriller & Mystery" fetchUrl="Signal" />
-            <MovieRow title="👻 Supernatural" fetchUrl="Goblin" />
-            <MovieRow title="😂 Comedy Series" fetchUrl="Weightlifting Fairy" />
+            {/* ✅ TMDB Categories (Unlimited & Fast) */}
+            <MovieRow title="🔥 Trending Now" fetchUrl="/trending/all/week" />
+            <MovieRow title="🎬 Top Rated Movies" fetchUrl="/movie/top_rated" />
+            <MovieRow title="📺 Popular TV Shows" fetchUrl="/tv/popular" />
+            <MovieRow title="💥 Action Packed" fetchUrl="/discover/movie?with_genres=28" />
+            <MovieRow title="😂 Comedy" fetchUrl="/discover/movie?with_genres=35" />
+            <MovieRow title="💕 Romance" fetchUrl="/discover/movie?with_genres=10749" />
           </div>
         </>
       )}
